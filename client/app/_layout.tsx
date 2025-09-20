@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider, useAuth } from '../context/AuthContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 function InitialLayout() {
@@ -21,10 +21,11 @@ function InitialLayout() {
     // Check if the user is in a public route (welcome or login).
     // The root route `/` has no segments, so `segments[0]` is undefined.
     const firstSegment = segments[0];
-    const isPublicRoute = firstSegment === undefined || firstSegment === 'login';
+    // The 'verify' screen is also part of the public authentication flow.
+    const isPublicRoute = !firstSegment || ['login', 'verify'].includes(firstSegment);
 
     if (session && isPublicRoute) {
-      // If the user is signed in and tries to access a public screen, redirect to the main dashboard.
+      // If the user is signed in and on a public screen, redirect to the main dashboard.
       router.replace('/dashboard');
     } else if (!session && !isPublicRoute) {
       // If the user is not signed in and tries to access a protected screen, redirect to the welcome screen.
@@ -36,6 +37,7 @@ function InitialLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="verify" options={{ headerShown: false }} />
       <Stack.Screen name="dashboard" options={{ title: 'Dashboard' }} />
       <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
     </Stack>

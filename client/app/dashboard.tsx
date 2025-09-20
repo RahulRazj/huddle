@@ -1,7 +1,7 @@
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function DashboardScreen() {
     const { signOut } = useAuth();

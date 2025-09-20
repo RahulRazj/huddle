@@ -10,25 +10,27 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
-import { useAuth } from './context/AuthContext';
+import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
+  const router = useRouter();
   const [phone, setPhone] = useState('');
   const [countryCode, setCountryCode] = useState<CountryCode>('IN');
   const [callingCode, setCallingCode] = useState('91');
   const [pickerVisible, setPickerVisible] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const { signIn } = useAuth();
 
-  const handleLogin = () => {
+  const handleContinue = () => {
     const fullPhoneNumber = `+${callingCode}${phone}`;
-    // In a real app, you would call your backend to verify the phone number
-    // and get a session token in return.
-    signIn(`dummy-token-for-${fullPhoneNumber}`);
+    router.push({
+      pathname: '/verify',
+      params: { phoneNumber: fullPhoneNumber },
+    });
   };
 
   const onSelectCountry = (country: Country) => {
@@ -36,6 +38,7 @@ export default function LoginScreen() {
     setCallingCode(country.callingCode[0] || '91');
     setPickerVisible(false);
   };
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
@@ -69,9 +72,7 @@ export default function LoginScreen() {
         >
           <View style={styles.contentContainer}>
             <Text style={styles.title}>Enter your phone number</Text>
-            <Text style={styles.subtitle}>
-              We'll text you a code to verify your phone.
-            </Text>
+            <Text style={styles.subtitle}>We'll text you a code to verify your phone.</Text>
 
             {/* Phone Input */}
             <View style={styles.inputWrapper}>
@@ -111,7 +112,7 @@ export default function LoginScreen() {
             </View>
 
             {/* Continue Button */}
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <TouchableOpacity style={styles.button} onPress={handleContinue}>
               <Text style={styles.buttonText}>Continue</Text>
             </TouchableOpacity>
 
@@ -182,6 +183,14 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#fff',
     fontSize: 18,
+  },
+  otpInput: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 50,
+    paddingHorizontal: 24,
+    height: 56,
+    textAlign: 'center',
+    marginBottom: 16,
   },
   clearButton: {
     padding: 8,
